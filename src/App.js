@@ -1,29 +1,66 @@
-import React from 'react'
-import ReactDOM from 'react-dom'
-import Header from './component/header'
-import Content from './component/content'
-import Total from './component/total'
+import React, { useState } from 'react'
+import './App.css';
+
+
+export const generateId = () => Math.random().toString(36).substring(2, 6)
+
 
 const App = () => {
-  const course = 'Half Stack application development'
-  const part1 = 'Fundamentals of React'
-  const exercises1 = 10
-  const part2 = 'Using props to pass data'
-  const exercises2 = 7
-  const part3 = 'State of a component'
-  const exercises3 = 14
+  const [newNumber, setNewNumber] = useState('')
+  const [persons, setPersons] = useState([
+    { name: 'Arto Hellas' }
+  ])
+  const [newName, setNewName] = useState('')
 
+  const addNewName = (e) => {
+    e.preventDefault();
+
+    if (Object.keys(persons).some(personId => {
+      const person = persons[personId]
+      return person.name.toLowerCase() === newName.trim().toLowerCase()
+    })) {
+      setNewName('')
+      return window.alert(`${newName} is already added to phonebook`)
+
+    }
+
+    const newInput = {}
+    newInput[generateId()] = {
+      name: newName
+    }
+    setPersons({
+      ...persons,
+      ...newInput
+
+    })
+    setNewName('')
+  }
   return (
     <div>
-      <Header course={course} />
-      <Content parts={part1} exercises={exercises1} />
-      <Content parts={part2} exercises={exercises2} />
-      <Content parts={part3} exercises={exercises3} />
-      <Total total={exercises1 + exercises2 + exercises3} />
+      <h2>Phonebook</h2>
+      <form onSubmit={e => addNewName(e)}>
+        <div>
+          name: <input type="text" value={newName} onChange={e => setNewName(e.target.value)} />
+        </div>
+        <div>
+          number: <input type="number" value={newNumber} onChange={e => setNewNumber(e.target.value)}></input>
+        </div>
+        <div>
+          <button type="submit">add</button>
+        </div>
+      </form>
+      <h2>Numbers</h2>
+      <p>{
+        Object.keys(persons).map(
+          personId => {
+            const person = persons[personId]
+            return <p key={personId}>{person.name}</p>
+          }
+        )
+      }
+      </p>
     </div>
   )
 }
 
-ReactDOM.render(<App />, document.getElementById('root'))
-
-export default App;
+export default App
