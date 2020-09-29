@@ -8,31 +8,34 @@ export const generateId = () => Math.random().toString(36).substring(2, 6)
 const App = () => {
   const [newNumber, setNewNumber] = useState('')
   const [persons, setPersons] = useState([
-    { name: 'Arto Hellas' }
+    { name: 'Arto Hellas', id: generateId() } // you should put id in every contact info!
   ])
   const [newName, setNewName] = useState('')
 
   const addNewName = (e) => {
     e.preventDefault();
 
-    if (Object.keys(persons).some(personId => {
-      const person = persons[personId]
-      return person.name.toLowerCase() === newName.trim().toLowerCase()
-    })) {
+    if (persons.some(person => person.name.toLowerCase().indexOf(newName.trim().toLowerCase()) === -1) {
       setNewName('')
-      return window.alert(`${newName} is already added to phonebook`)
+      window.alert(`${newName} is already added to phonebook`)
+    } // 1. you initialized persons in your useState as an array and you're treating it as if it's an object!
+      // 2. Never say `return`! you either say `return something` or `return null`
 
-    }
+//     const newInput = {}
+//     newInput[generateId()] = {
+//       name: newName
+//     }
+//     setPersons({
+//       ...persons,
+//       ...newInput
 
-    const newInput = {}
-    newInput[generateId()] = {
+//     })
+    // code above is wrong as well!!! please understand your code. Don't just copy and paste the class work!
+    setPersons(persons => persons.concat({
+      id: generateId(),
       name: newName
-    }
-    setPersons({
-      ...persons,
-      ...newInput
-
-    })
+    }))
+  
     setNewName('')
   }
   return (
@@ -50,15 +53,9 @@ const App = () => {
         </div>
       </form>
       <h2>Numbers</h2>
-      <p>{
-        Object.keys(persons).map(
-          personId => {
-            const person = persons[personId]
-            return <p key={personId}>{person.name}</p>
-          }
-        )
+      {
+        persons.map(person => <p key={personId}>{person.name}</p>)
       }
-      </p>
     </div>
   )
 }
