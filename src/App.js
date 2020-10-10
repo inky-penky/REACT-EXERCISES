@@ -1,66 +1,71 @@
 import React, { useState } from 'react'
+
+import Search from './component/Search'
+
+import Phonebook from './component/Phonebook'
+
 import './App.css';
 
 
-export const generateId = () => Math.random().toString(36).substring(2, 6)
+const generateId = () => Math.random().toString(36).substring(2, 6)
 
 
 const App = () => {
-  const [newNumber, setNewNumber] = useState('')
   const [persons, setPersons] = useState([
-    { name: 'Arto Hellas' }
+    { id:1, name: 'Arto Hellas', number: '040-123456' },
+    { id:2, name: 'Ada Lovelace', number: '39-44-5323523' },
+    { id:3, name: 'Dan Abramov', number: '12-43-234345' },
+    { id:4, name: 'Mary Poppendieck', number: '39-23-6423122' }
   ])
   const [newName, setNewName] = useState('')
+  const [newNumber, setNewNumber] = useState('')
+  const [query, setQuery] = useState('')
 
   const addNewName = (e) => {
     e.preventDefault();
 
-    if (Object.keys(persons).some(personId => {
-      const person = persons[personId]
-      return person.name.toLowerCase() === newName.trim().toLowerCase()
-    })) {
+    if (persons.some(person =>  person.name.toLowerCase() === newName.trim().toLowerCase()
+    )) {
+      window.alert(`${newName} is already added to phonebook`)
       setNewName('')
-      return window.alert(`${newName} is already added to phonebook`)
-
+      return null
     }
 
-    const newInput = {}
-    newInput[generateId()] = {
-      name: newName
+    const newInput = {
+      id:generateId(),
+      name: newName,
+      number: newNumber
     }
-    setPersons({
+    setPersons([
       ...persons,
-      ...newInput
+      newInput
 
-    })
+    ])
     setNewName('')
+    setNewNumber('')
   }
+
+  const contactToShow = query.trim()? persons.filter(person => person.name.toLowerCase().indexOf(query.trim().toLowerCase()) > -1): persons
+  
+  const handleSetQuery = (arg) => setQuery(arg)
+
   return (
     <div>
-      <h2>Phonebook</h2>
-      <form onSubmit={e => addNewName(e)}>
-        <div>
-          name: <input type="text" value={newName} onChange={e => setNewName(e.target.value)} />
-        </div>
-        <div>
-          number: <input type="number" value={newNumber} onChange={e => setNewNumber(e.target.value)}></input>
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
+      <Search  query={query} handleQuery={handleSetQuery}/>
+      <Phonebook name={ addNewName }  newName={ newName } setNewName={ setNewName } newNumber={ newNumber } setNewNumber={setNewNumber} />
       <h2>Numbers</h2>
-      <p>{
-        Object.keys(persons).map(
-          personId => {
-            const person = persons[personId]
-            return <p key={personId}>{person.name}</p>
+      <p>
+        {
+        contactToShow.map(
+          person => {
+            
+          return <p key={person.id}>{person.name} - {person.number}</p>
           }
         )
       }
-      </p>
+       </p>
+       
     </div>
   )
 }
-
-export default App
+export default App;
